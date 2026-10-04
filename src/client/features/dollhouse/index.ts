@@ -187,5 +187,5 @@ export function installDollhouse(ctx: Ctx) {
     },
   });
 
-  return { active: () => on };
+  return { active: () => on, reset: () => (doll.yaw = 1.15), toggle: () => player.setView(on ? 'first' : 'dollhouse') };
 }

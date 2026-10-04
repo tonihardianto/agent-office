@@ -92,6 +92,21 @@ export function installHud(ctx: Ctx, core: CoreState, parts: HudParts) {
       { id: 'accounts', icon: '🔑', label: 'Accounts', section: 'Together', shown: () => store.me.admin, title: () => 'Invite people, see who has an account, revoke them', run: () => openAccounts(net) },
       { id: 'signins', icon: '🔐', label: 'Your sign-ins', section: 'Together', shown: () => !!store.me.account, tone: () => (needsSigningIn() ? 'danger' : undefined), status: needsSigningIn, chip: () => 'Sign in to Claude', title: () => 'The Claude plan and GitHub account your workers run on: your own', run: () => openSignIns(net) },
       { id: 'settings', icon: '⚙️', label: 'Settings', section: 'Office', run: showSettings },
+      // A quick way to switch between seeing through your own eyes and looking into the room from
+      // outside, without opening Settings every time (see features/dollhouse). While it's on it sits
+      // on the top bar too, so there's always a way back.
+      {
+        id: 'dollhouse',
+        icon: '🪆',
+        label: () => (player.view === 'dollhouse' ? 'Back to your own eyes' : 'Dollhouse view'),
+        section: 'Office',
+        on: () => player.view === 'dollhouse',
+        status: () => player.view === 'dollhouse',
+        chip: () => 'Dollhouse',
+        tone: () => (player.view === 'dollhouse' ? 'primary' : undefined),
+        title: () => (player.view === 'dollhouse' ? 'Back to looking through your own eyes' : 'See the office from above and outside, roof off and the near walls down, like a model of it'),
+        run: () => player.setView(player.view === 'dollhouse' ? 'first' : 'dollhouse'),
+      },
       { id: 'help', icon: '❓', label: 'Controls', section: 'Office', key: 'H', run: openHelp },
       { id: 'lite', icon: '📱', label: '2D view', section: 'Office', title: () => 'The workers, their terminals and the boards without the 3D: for a phone or a slow computer', run: () => location.assign('/lite') },
       {
