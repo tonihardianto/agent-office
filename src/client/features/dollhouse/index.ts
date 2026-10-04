@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { Side } from '../../../shared/layout';
 import type { Ctx } from '../../core/context';
+import { modalOpen } from '../../ui/dom';
 import './ui.css';
 import { Dollhouse, nearSides, sameSides } from './controller';
 
@@ -89,7 +90,11 @@ export function installDollhouse(ctx: Ctx) {
     frameDt = f.dt;
     const want = player.view === 'dollhouse';
     if (want !== on) (want ? enter : leave)();
-    if (on) dress();
+    if (!on) return;
+    // You can't walk about from out here (nor would you want to: you're in the view, not the room), so
+    // the keys that would carry you over the floor carry the view instead.
+    player.enabled = false;
+    dress();
   });
 
   // ---- Keys -----------------------------------------------------------------------------------------
