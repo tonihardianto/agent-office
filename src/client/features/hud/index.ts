@@ -93,18 +93,18 @@ export function installHud(ctx: Ctx, core: CoreState, parts: HudParts) {
       { id: 'signins', icon: '🔐', label: 'Your sign-ins', section: 'Together', shown: () => !!store.me.account, tone: () => (needsSigningIn() ? 'danger' : undefined), status: needsSigningIn, chip: () => 'Sign in to Claude', title: () => 'The Claude plan and GitHub account your workers run on: your own', run: () => openSignIns(net) },
       { id: 'settings', icon: '⚙️', label: 'Settings', section: 'Office', run: showSettings },
       // A quick way to switch between seeing through your own eyes and looking into the room from
-      // outside, without opening Settings every time (see features/dollhouse). While it's on it sits
-      // on the top bar too, so there's always a way back.
+      // outside, without opening Settings every time (see features/dollhouse). The row says which
+      // view you're in, so clicking it is never a guess about where you'll end up.
       {
         id: 'dollhouse',
-        icon: '🪆',
-        label: () => (player.view === 'dollhouse' ? 'Back to your own eyes' : 'Dollhouse view'),
+        icon: () => (player.view === 'dollhouse' ? '🪆' : '👀'),
+        label: () => (player.view === 'dollhouse' ? 'Dollhouse · to first person' : 'Camera: first person · to dollhouse'),
         section: 'Office',
         on: () => player.view === 'dollhouse',
         status: () => player.view === 'dollhouse',
         chip: () => 'Dollhouse',
         tone: () => (player.view === 'dollhouse' ? 'primary' : undefined),
-        title: () => (player.view === 'dollhouse' ? 'Back to looking through your own eyes' : 'See the office from above and outside, roof off and the near walls down, like a model of it'),
+        title: () => (player.view === 'dollhouse' ? 'You are looking into the office from outside. Click to go back to your own eyes' : 'You are looking through your own eyes. Click to see the office from above and outside, roof off and the near walls down'),
         run: () => player.setView(player.view === 'dollhouse' ? 'first' : 'dollhouse'),
       },
       { id: 'help', icon: '❓', label: 'Controls', section: 'Office', key: 'H', run: openHelp },
