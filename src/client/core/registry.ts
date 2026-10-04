@@ -316,13 +316,16 @@ export interface FrameFilter {
  * What something you can do makes of you and your view while it's going on: holding on to the ladder,
  * the view narrowing at the dart board or widening down a pole, the telescope or a game having the
  * screen to itself, the drunk vision. The office's own ticks (moving you, the building, drawing the
- * frame) ask each effect, in the order they were added. `G` is what you can hold on to.
+ * frame) ask each effect, in the order they were added. `G` is what you can hold on to, `C` a camera
+ * one of them draws through.
  */
-export interface ViewEffect<G = unknown> {
+export interface ViewEffect<G = unknown, C = unknown> {
   /** What you're holding on to (the ladder, a pole), or null. */
   grip?(): G | null;
   /** The field of view (degrees) as this has it, given what it is so far. */
   fov?(fov: number): number;
+  /** The camera the frame is drawn with and aimed through, while this has one of its own (the dollhouse). */
+  camera?(): C | null;
   /** Runs each frame once the view's field of view is set. */
   update?(): void;
   /** It has the screen to itself right now (the telescope, a game up close): your hands aren't drawn over it. */
@@ -332,10 +335,10 @@ export interface ViewEffect<G = unknown> {
 }
 
 /** How what you're doing changes you and your view each frame (see ViewEffect). */
-export class View<G = unknown> {
-  private readonly effects = new List<ViewEffect<G>>();
+export class View<G = unknown, C = unknown> {
+  private readonly effects = new List<ViewEffect<G, C>>();
 
-  add(e: ViewEffect<G>): Off {
+  add(e: ViewEffect<G, C>): Off {
     return this.effects.add(e);
   }
 
@@ -356,6 +359,15 @@ export class View<G = unknown> {
 
   update(): void {
     for (const e of this.effects.items) e.update?.();
+  }
+
+  /** The camera the frame is drawn with and aimed through: the first effect with one of its own, else `fallback`. */
+  camera<F extends C>(fallback: F): C | F {
+    for (const e of this.effects.items) {
+      const c = e.camera?.();
+      if (c) return c;
+    }
+    return fallback;
   }
 
   /** Whether anything has the screen to itself. */

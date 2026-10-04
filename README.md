@@ -42,6 +42,7 @@ curl -fsSL https://raw.githubusercontent.com/AgentSystemLabs/agent-office/main/i
 - **Together.** Voice, chat, screen sharing on the lounge TV and a shared whiteboard.
 
 - **Other maps.** Turn the whole building into a castle: sit on a throne of iron blades while your workers line up before you when they're done, send new ones off through the Hand of the King, and watch their beards grow long and grey as they toil. Send one home and the Kingsguard runs up from the dungeon, marches it down the stairs and throws it in a cell, where it starves, dies and rots down to a skeleton. Or into a space station in orbit, the Earth turning outside its windows: you run it from the captain's chair on the bridge, and a worker sent home is marched to the airlock and blown out into space, to drift off past the observation windows with everyone who went before it. Or make a map of your own, with its own way of seeing workers off in JSON ([docs/maps.md](docs/maps.md)).
+- **See the room from outside.** Besides looking through your own eyes or following yourself from behind, ⚙️ Settings → **Camera view** has **🪆 Dollhouse**: the office with the roof off and the walls between you and it down, seen from above and outside like a model of it. Drag to turn it, right-drag or Shift-drag to carry it across the floor, the wheel to fit more or less of it in, and click a desk, a board or a worker to use it. Esc is first person again. See [Features](docs/features.md).
 
 There's a lot more (a rooftop bar, an office dog, an arcade, supercars in the garage to drive round a scenic loop past a farm, pines, mountains and a beach): see [docs/features.md](docs/features.md).
 
@@ -366,7 +367,7 @@ deploy/coolify.sh ssh 'node /opt/agent-office/bin/agent-office.js accounts invit
 | --- | --- |
 | W A S D | Walk (hold Shift to run) |
 | Space | Jump |
-| Mouse drag / wheel | Orbit / zoom the camera |
+| Mouse drag / wheel | Orbit / zoom the camera; in the dollhouse view, turn it and zoom it (right-drag carries it) |
 | E | Interact: hire a worker, open its terminal, read a board, sit down, ride the elevator |
 | P | Give a task to a new worker, or to the one at this desk |
 | C | See a worker's changes: diff, commit, open a PR |
