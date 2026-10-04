@@ -85,7 +85,8 @@ export function installPointer(ctx: Ctx, core: CoreState, parts: PointerParts) {
 
   /** What the ray through `ndc` lands on first, whether it is within reach (plus `slack` meters), and where it hit. */
   function aimedAt(ndc: THREE.Vector2, slack = 0): { it: Interactable; near: boolean; hit: THREE.Intersection } | null {
-    raycaster.setFromCamera(ndc, camera);
+    // Aimed through whatever camera the frame is drawn with: in the dollhouse that's one of its own (see ctx.view).
+    raycaster.setFromCamera(ndc, ctx.view.camera(camera));
     eye.set(player.pos.x, player.pos.y + EYE_HEIGHT, player.pos.z);
     // (Workers standing in line in the castle carry their spot's interactable: see Court.)
     const roof = parts.rooftop.roof();
@@ -127,14 +128,17 @@ export function installPointer(ctx: Ctx, core: CoreState, parts: PointerParts) {
     (pointer ??= new THREE.Vector2()).set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   });
   canvas.addEventListener('pointerleave', () => (pointer = null));
-  // What you're pointing at (first person) or standing at (third), and what the hint bar says about it.
+  // What you're pointing at (first person and the dollhouse) or standing at (third), and what the hint bar says about it.
   ctx.ticks.add('aim', () => {
     const { seating, hoops } = parts;
     const firstPerson = player.view === 'first';
+    // The dollhouse is a view from outside the room: the mouse points into it, the way it does in third person,
+    // but a click uses what's under it outright, without walking you over (see player.onClick).
+    const aimedView = firstPerson || player.view === 'dollhouse';
     aimedNote = null;
     if (modalOpen() || parts.telescope.active || ctx.activities.busy()) target = null;
-    else if (firstPerson) {
-      const aim = aimedAt(CROSSHAIR);
+    else if (aimedView) {
+      const aim = aimedAt(firstPerson ? CROSSHAIR : (pointer ?? CROSSHAIR));
       target = aim?.near ? aim.it : (throneTarget() ?? seating.mySeat() ?? (inOffice() ? hoops.ballAtFeet() : null));
       if (aim?.near) aimedNote = noteUnder(aim);
     } else {
@@ -152,6 +156,7 @@ export function installPointer(ctx: Ctx, core: CoreState, parts: PointerParts) {
 
   player.onClick = (ndc) => {
     const { emotes, hoops } = parts;
+    const firstPerson = player.view === 'first';
     // At the tee, a click is you steadying the mouse to aim: nothing else is in reach.
     // At the dart board or the axe lane, the button throws (see Thrower).
     if (modalOpen() || ctx.activities.any('takesCamera')) return;
@@ -168,7 +173,7 @@ export function installPointer(ctx: Ctx, core: CoreState, parts: PointerParts) {
       hanger.place(ndc);
       return;
     }
-    if (player.view === 'first') {
+    if (firstPerson || player.view === 'dollhouse') {
       // Reach out even at nothing, like poking the air.
       reach();
       if (target) interact(target, 'E');

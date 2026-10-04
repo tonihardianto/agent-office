@@ -16,6 +16,7 @@ import { choiceRow } from './settings-rows';
 const VIEWS: [ViewMode, string, string][] = [
   ['first', '👀 First person', 'See through your own eyes. Click the office to look around with the mouse and click things to use them. Esc frees the mouse.'],
   ['third', '🎥 Third person', 'Follow your character from behind. Drag to orbit the camera, scroll to zoom, and click things to use them.'],
+  ['dollhouse', '🪆 Dollhouse', 'The room from above and outside: the roof off and the walls between you and it down, like a model of the office. Drag to turn it, right-drag or Shift-drag to slide it about, the wheel to fit more or less in, and click things to use them. The arrow keys or WASD carry it over the floor. Esc goes back to first person.'],
 ];
 
 const THEME_LABEL: Record<ThemePick, string> = { auto: '📅 By the calendar', halloween: '🎃 Halloween', christmas: '🎄 Christmas', off: 'Off' };

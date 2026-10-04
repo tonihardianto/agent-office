@@ -130,7 +130,7 @@ export interface Ctx {
   readonly activities: Activities<StopWhy, KeyboardEvent, HTMLElement>;
   readonly interactions: Interactions<OfficeInteraction>;
   /** What what you're doing makes of you and your view each frame (see ViewEffect). */
-  readonly view: View<Grip>;
+  readonly view: View<Grip, THREE.Camera>;
   /**
    * What else there is to use on the office's own map, and to aim at: the pictures on the walls, the
    * dog, the ball (see usable and aimedAt in input/pointer.ts).

@@ -92,6 +92,31 @@ export function installHud(ctx: Ctx, core: CoreState, parts: HudParts) {
       { id: 'accounts', icon: '🔑', label: 'Accounts', section: 'Together', shown: () => store.me.admin, title: () => 'Invite people, see who has an account, revoke them', run: () => openAccounts(net) },
       { id: 'signins', icon: '🔐', label: 'Your sign-ins', section: 'Together', shown: () => !!store.me.account, tone: () => (needsSigningIn() ? 'danger' : undefined), status: needsSigningIn, chip: () => 'Sign in to Claude', title: () => 'The Claude plan and GitHub account your workers run on: your own', run: () => openSignIns(net) },
       { id: 'settings', icon: '⚙️', label: 'Settings', section: 'Office', run: showSettings },
+      // How you see the office, one row each, with a dot on the one you're in — the same three
+      // Settings → Camera view lists (see features/dollhouse). Picking one is a click from here
+      // rather than a walk through Settings.
+      ...[
+        ['first', '👀', 'First person', 'through your own eyes'],
+        ['third', '🎥', 'Third person', 'following yourself from behind'],
+        ['dollhouse', '🪆', 'Dollhouse', 'into the room from above and outside'],
+      ].map(([view, icon, label, what]) => ({
+        id: `view-${view}`,
+        icon,
+        label: () => `Camera: ${label}`,
+        section: 'Office' as const,
+        on: () => player.view === view,
+        // While you're looking in from outside, the top bar keeps the one you came from handy.
+        status: () => view === 'dollhouse' && player.view === view,
+        chip: () => 'Dollhouse',
+        tone: () => (view === 'dollhouse' && player.view === view ? ('primary' as const) : undefined),
+        title: () => `${what}${player.view === view ? ' — you are in this one' : ''}`,
+        run: () => {
+          if (player.view === view) return;
+          player.setView(view as 'first' | 'third' | 'dollhouse');
+          // The rows put their dot on the one you're in, and the top bar follows, so redraw.
+          hud.refresh();
+        },
+      })),
       { id: 'help', icon: '❓', label: 'Controls', section: 'Office', key: 'H', run: openHelp },
       { id: 'lite', icon: '📱', label: '2D view', section: 'Office', title: () => 'The workers, their terminals and the boards without the 3D: for a phone or a slow computer', run: () => location.assign('/lite') },
       {
@@ -152,6 +177,7 @@ export function installHud(ctx: Ctx, core: CoreState, parts: HudParts) {
       (s) => {
         // Switching to push to talk mutes you now; back to an open mic turns it on.
         const talkChanged = s.pushToTalk !== settings.pushToTalk;
+        const viewChanged = s.view !== settings.view;
         Object.assign(settings, s);
         saveSettings(settings);
         if (talkChanged) {
@@ -159,6 +185,8 @@ export function installHud(ctx: Ctx, core: CoreState, parts: HudParts) {
           hud.refresh();
         }
         player.setView(settings.view);
+        // The menu row and the top bar say which view you're in, so they follow Settings too.
+        if (viewChanged) hud.refresh();
         sound.setVolume(settings.volume, settings.muted);
         sound.setMusicVolume(settings.music, settings.musicMuted);
       },
