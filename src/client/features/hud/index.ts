@@ -18,6 +18,7 @@ import { toggleFloorMenu } from '../../ui/floormenu';
 import { openHelp } from '../../ui/hud';
 import { mountHud } from '../../ui/menu';
 import { openServices } from '../../ui/services';
+import { VIEWS } from '../../ui/views';
 import { openSettings, type SettingsPane } from '../../ui/settings';
 import { needsSigningIn, openSignIns } from '../../ui/signins';
 import { openTeam } from '../../ui/team';
@@ -92,32 +93,25 @@ export function installHud(ctx: Ctx, core: CoreState, parts: HudParts) {
       { id: 'accounts', icon: '🔑', label: 'Accounts', section: 'Together', shown: () => store.me.admin, title: () => 'Invite people, see who has an account, revoke them', run: () => openAccounts(net) },
       { id: 'signins', icon: '🔐', label: 'Your sign-ins', section: 'Together', shown: () => !!store.me.account, tone: () => (needsSigningIn() ? 'danger' : undefined), status: needsSigningIn, chip: () => 'Sign in to Claude', title: () => 'The Claude plan and GitHub account your workers run on: your own', run: () => openSignIns(net) },
       { id: 'settings', icon: '⚙️', label: 'Settings', section: 'Office', run: showSettings },
-      // How you see the office, one row each, with a dot on the one you're in — the same three
-      // Settings → Camera view lists (see features/dollhouse). Picking one is a click from here
-      // rather than a walk through Settings.
-      ...[
-        ['first', '👀', 'First person', 'through your own eyes'],
-        ['third', '🎥', 'Third person', 'following yourself from behind'],
-        ['dollhouse', '🪆', 'Dollhouse', 'into the room from above and outside'],
-      ].map(([view, icon, label, what]) => ({
+      // How you see the office: the same three Settings → Camera view lists (see features/dollhouse).
+      // They sit on the top bar as one little group, the one you're in lit up, so switching is a click
+      // from wherever you are; the ☰ menu lists them by name too.
+      ...VIEWS.map(([view, icon, label, what]) => ({
         id: `view-${view}`,
         icon,
-        label: () => `Camera: ${label}`,
+        label: `Camera: ${label}`,
         section: 'Office' as const,
+        // Always on the top bar: it's how you see, not something you go looking for.
+        status: () => true,
         on: () => player.view === view,
-        // While you're looking in from outside, the top bar keeps the one you came from handy.
-        status: () => view === 'dollhouse' && player.view === view,
-        chip: () => 'Dollhouse',
-        tone: () => (view === 'dollhouse' && player.view === view ? ('primary' as const) : undefined),
-        title: () => `${what}${player.view === view ? ' — you are in this one' : ''}`,
+        title: () => `${label}: ${what}${player.view === view ? ' — you are in this one' : ''}`,
         run: () => {
           if (player.view === view) return;
-          player.setView(view as 'first' | 'third' | 'dollhouse');
-          // The rows put their dot on the one you're in, and the top bar follows, so redraw.
+          player.setView(view);
+          // The lit button and the menu's dot follow the view, so redraw both.
           hud.refresh();
         },
-      })),
-      { id: 'help', icon: '❓', label: 'Controls', section: 'Office', key: 'H', run: openHelp },
+      })),      { id: 'help', icon: '❓', label: 'Controls', section: 'Office', key: 'H', run: openHelp },
       { id: 'lite', icon: '📱', label: '2D view', section: 'Office', title: () => 'The workers, their terminals and the boards without the 3D: for a phone or a slow computer', run: () => location.assign('/lite') },
       {
         id: 'upgrade',

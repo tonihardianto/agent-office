@@ -2,6 +2,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
 import { Dollhouse, MAX_HALF, MIN_HALF, START_HALF, START_PITCH, nearSides, sameSides } from '../src/client/features/dollhouse/controller.js';
+import { VIEWS } from '../src/client/ui/views.js';
+
+// The dollhouse's camera: what walls it takes away to see in, and where it stands. The view itself
+// (features/dollhouse/index.ts) needs a whole client to run, so this is the arithmetic it works by.
+
+test('the views offered are the ones the player can be in, in the same order', () => {
+  // ui/views.ts spells ViewMode out to stay out of a cycle (it's reached from state's own UI), so
+  // the two could drift: this is what holds them together.
+  assert.deepEqual(
+    VIEWS.map(([v]) => v),
+    ['first', 'third', 'dollhouse'],
+  );
+  // Every one says what it's called and what it shows, or it reads as a blank row.
+  for (const [view, icon, label, what] of VIEWS) {
+    assert.ok(view && icon && label && what, `${view} is missing something`);
+  }
+  // Ids the menu builds from these have to stay distinct.
+  assert.equal(new Set(VIEWS.map(([v]) => `view-${v}`)).size, VIEWS.length);
+});
 
 // The dollhouse's camera: what walls it takes away to see in, and where it stands. The view itself
 // (features/dollhouse/index.ts) needs a whole client to run, so this is the arithmetic it works by.

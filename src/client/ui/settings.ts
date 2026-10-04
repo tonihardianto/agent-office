@@ -11,13 +11,17 @@ import { h, openModal, timeAgo } from './dom';
 import { agentFields, choiceLabel, officeChoice } from './provider';
 import { openPromptEditor, rewrittenPrompts } from './prompts';
 import { outsideSetting } from './settings-sky';
+import { VIEWS as VIEW_LIST } from './views';
 import { choiceRow } from './settings-rows';
 
-const VIEWS: [ViewMode, string, string][] = [
-  ['first', '👀 First person', 'See through your own eyes. Click the office to look around with the mouse and click things to use them. Esc frees the mouse.'],
-  ['third', '🎥 Third person', 'Follow your character from behind. Drag to orbit the camera, scroll to zoom, and click things to use them.'],
-  ['dollhouse', '🪆 Dollhouse', 'The room from above and outside: the roof off and the walls between you and it down, like a model of the office. Drag to turn it, right-drag or Shift-drag to slide it about, the wheel to fit more or less in, and click things to use them. The arrow keys or WASD carry it over the floor. Esc goes back to first person.'],
-];
+/** What to do in each view, on top of what it shows (see UI.VIEWS). */
+const VIEW_NOTES: Record<ViewMode, string> = {
+  first: 'Click the office to look around with the mouse and click things to use them. Esc frees the mouse.',
+  third: 'Drag to orbit the camera, scroll to zoom, and click things to use them.',
+  dollhouse: 'Drag to turn it, right-drag or Shift-drag to carry it about, the wheel to fit more or less in, and the arrow keys or WASD to slide it over the floor. Esc goes back to first person.',
+};
+
+const VIEWS: [ViewMode, string, string][] = VIEW_LIST.map(([view, icon, label, what]) => [view, `${icon} ${label}`, `${VIEW_NOTES[view]} ${what[0].toUpperCase()}${what.slice(1)}.`]);
 
 const THEME_LABEL: Record<ThemePick, string> = { auto: '📅 By the calendar', halloween: '🎃 Halloween', christmas: '🎄 Christmas', off: 'Off' };
 
