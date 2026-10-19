@@ -1,0 +1,3 @@
+/* The dollhouse: the room's own view (see index.ts). The cursor has the room to take hold of. */
+body.dollhouse #scene { cursor: move; }
+body.dollhouse #scene.carrying { cursor: grabbing; }

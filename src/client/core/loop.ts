@@ -191,8 +191,10 @@ export function installLoop(ctx: Ctx, core: CoreState, parts: Pick<Parts, 'stage
     const { player, hands, sky, camera, renderer } = ctx;
     const { effect, scene } = parts.stage;
     const firstPerson = player.view === 'first';
+    // Whatever camera the view is drawn with: the dollhouse has one of its own (see ctx.view).
+    const through = ctx.view.camera(camera);
     const unhide = firstBody?.hideExtras();
-    effect.render(scene, camera);
+    effect.render(scene, through);
     unhide?.();
     // Not while something has the screen to itself (the telescope, the boss's monitor or the arcade up close), where they'd cover it.
     if (firstPerson && !ctx.view.covered() && !ctx.activities.any('hidesHands')) {

@@ -216,8 +216,12 @@ test('what the browser remembers keeps its keys and shapes', () => {
   assert.equal(state.loadSettings().volume, 1);
   assert.equal(state.loadSettings().view, 'third');
   assert.equal(state.loadSettings().needsYouSound, 'remind');
+  // The dollhouse is a setting like the other two views, kept and picked back up the same way.
+  state.saveSettings({ ...settings, view: 'dollhouse' });
+  assert.equal(state.loadSettings().view, 'dollhouse');
   // A setting saved as something the office doesn't know goes back to how it starts.
-  state.saveSettings({ ...settings, needsYouSound: 'loud' as never });
+  state.saveSettings({ ...settings, view: 'isometric' as never, needsYouSound: 'loud' as never });
+  assert.equal(state.loadSettings().view, 'first');
   assert.equal(state.loadSettings().needsYouSound, 'once');
   store.apply(welcome());
   assert.equal(state.lastFloor(), 'f1');

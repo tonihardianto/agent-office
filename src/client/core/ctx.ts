@@ -111,7 +111,7 @@ export function createCtx(parts: Parts): { ctx: Ctx; core: CoreState } {
     ticks: new Ticks(),
     activities: new Activities<StopWhy, KeyboardEvent, HTMLElement>(ACTIVITY_ORDER),
     interactions: new Interactions<OfficeInteraction>(),
-    view: new View<Grip>(),
+    view: new View<Grip, THREE.Camera>(),
     usables: new Usables<Interactable, THREE.Object3D>(),
     windowOpened: new Hooks(),
   };

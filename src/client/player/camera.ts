@@ -43,7 +43,9 @@ export interface Followed {
  * `lift` up or down while you sit), or round behind you in third, where it eases over unless `snap`.
  */
 export function aimCamera(camera: THREE.PerspectiveCamera, p: Followed, bob: number, lift: number, snap: boolean) {
-  if (p.view === 'first') {
+  // The dollhouse draws through a camera of its own (see features/dollhouse), but this one still stands at
+  // your eyes: the sky, the sound and the light all read where you are from it.
+  if (p.view === 'first' || p.view === 'dollhouse') {
     camera.position.set(p.pos.x, p.pos.y + EYE_HEIGHT + bob + p.stepOffset + lift, p.pos.z);
     camera.rotation.set(p.lookPitch, p.camYaw, 0);
     return;

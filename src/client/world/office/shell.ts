@@ -181,6 +181,12 @@ export function balconyDoor(): { group: THREE.Group; door: Door } {
 const SHADE_HEIGHT = 4.2;
 
 /**
+ * Which of the four outside walls a run of wall belongs to, for the dollhouse view to take the near
+ * ones away (see features/dollhouse): a run along `axis` is the wall on the side it faces out of.
+ */
+const outerSide = (axis: 'x' | 'z', out: 1 | -1): Side => (axis === 'x' ? (out > 0 ? 'south' : 'north') : out > 0 ? 'east' : 'west');
+
+/**
  * The four outside walls, built in pieces around their windows and doors. Each is painted inside in
  * the floor's colors and outside in the building's.
  */
@@ -218,6 +224,8 @@ export function buildWalls(group: THREE.Group, colliders: Collider[], openings: 
       m.receiveShadow = true;
       // Indoors, walls stop taking shadows (see features/lamplight): the lamps overhead would cast them down the wall from whatever hangs there.
       m.userData.wall = true;
+      // Which of the four walls this is, so the dollhouse view can take the near ones away (see features/dollhouse).
+      m.userData.side = w.side;
       group.add(m);
     };
     // Baseboard and collider run between the doors.
@@ -296,6 +304,8 @@ export function wallRun(into: THREE.Group, cols: Collider[], axis: 'x' | 'z', at
     m.castShadow = y1 <= SHADE_HEIGHT;
     m.receiveShadow = true;
     m.userData.wall = true;
+    // Which wall of the four this run is closest to, for the dollhouse view to take away (see features/dollhouse).
+    m.userData.side = outerSide(axis, out);
     into.add(m);
   };
   let u = u0;

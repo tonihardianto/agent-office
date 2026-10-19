@@ -41,6 +41,7 @@ import { installClimbing } from './features/climbing';
 import { installCoffee } from './features/coffee';
 import { installDictation } from './features/dictation';
 import { installDog } from './features/dog';
+import { installDollhouse } from './features/dollhouse';
 import { installEmotes } from './features/emotes';
 import { installGolf } from './features/golf';
 import { installGong } from './features/gong';
@@ -123,6 +124,7 @@ parts.reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 parts.sound = makeSound(parts.settings);
 
 parts.dog = installDog(ctx);
+installDollhouse(ctx);
 parts.jukebox = installJukebox(ctx, { showSettings: (pane) => parts.hud.showSettings(pane) });
 parts.cabinet = installCabinet(ctx, { openTerminal: (id) => parts.waiting.openWorkerTerminal(id) });
 parts.notifier = new DesktopNotifier(() => parts.settings.notify, (id) => parts.waiting.answerWorker(id));

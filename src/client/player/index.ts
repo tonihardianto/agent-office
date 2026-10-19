@@ -89,6 +89,7 @@ export class PlayerController extends PlayerInput {
       this.camYaw = this.facing - Math.PI;
       this.unlock();
     }
+    // The dollhouse is the room's own view, from outside it: the player's camera isn't drawn through.
     this.view = view;
     this.updateCamera(true);
   }
